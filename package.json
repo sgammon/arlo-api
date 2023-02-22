@@ -8,7 +8,9 @@
     "dist/"
   ],
   "keywords": [
-    "arlo", "homebridge", "mfa"
+    "arlo",
+    "homebridge",
+    "mfa"
   ],
   "scripts": {
     "clean": "rimraf dist",
@@ -16,7 +18,8 @@
     "prepublish": "npm run tsc",
     "build": "npm run clean && npm run tsc",
     "test": "npm run build && jest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "pretty": "npx prettier --write ."
   },
   "type": "module",
   "author": "Will O'Donnell",

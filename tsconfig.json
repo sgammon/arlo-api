@@ -8,13 +8,9 @@
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist/esm",
     "declaration": true,
-    "moduleResolution": "node",
+    "moduleResolution": "node"
   },
   "$schema": "https://json.schemastore.org/tsconfig",
   "display": "Recommended",
-  "exclude": [
-    "./src/tests/",
-    "./node_modules/",
-    "./dist/"
-  ]
+  "exclude": ["./src/tests/", "./node_modules/", "./dist/"]
 }
