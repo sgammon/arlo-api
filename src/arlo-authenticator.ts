@@ -5,53 +5,15 @@ import AUTH_URLS_MFA from './constants/auth-urls-mfa';
 import { CookieJar } from 'tough-cookie';
 import { wrapper } from 'axios-cookiejar-support';
 import axios, { AxiosInstance } from 'axios';
-
-type Verb = 'POST' | 'GET' | 'PUT';
-
-type FactorType = 'EMAIL' | 'SMS';
-type FactorRole = 'SECONDARY' | 'PRIMARY';
-
-interface HttpRequest {
-  verb: Verb;
-  url: string;
-  body?: Record<string, any>;
-  headers: object;
-}
-
-interface ArloAuthResponse {
-  token: string;
-  userId: string;
-  authenticated: number;
-  issued: number;
-  expiresIn: number;
-  mfa: boolean;
-  authCompleted: boolean;
-  type: string;
-  MFA_State: string;
-}
-
-export interface AuthResponse {
-  authToken: string;
-  /**
-   * Unix timestamp representing the date the token was issued.
-   */
-  authenticated: number;
-  userID: string;
-}
-
-export interface MfaFactorResponse {
-  items: Array<MfaFactor>;
-}
-
-export interface MfaFactor {
-  factorId: string;
-  factorType: FactorType;
-  displayName: string;
-  factorNickname: string;
-  applicationId: string;
-  applicationName: string;
-  factorRole: FactorRole;
-}
+import { stringsEqualInsensitive } from './utils';
+import {
+  ArloAuthResponse,
+  AuthResponse,
+  HttpRequest,
+  MfaFactor,
+  MfaFactorResponse,
+  MfaRequestResponse,
+} from './interfaces/arlo-auth-interfaces';
 
 export class ArloAuthenticator {
   private config: Configuration;
@@ -77,7 +39,20 @@ export class ArloAuthenticator {
   }
 
   async login() {
-    const headers = this.headers();
+    // Get authentication token.
+    const authInfo = await this.getAuthToken();
+
+    // Get MFA factors.
+    const factors = await this.getFactors(authInfo.authToken);
+
+    // Find the factor matching the provided email user.
+    const factor = this.findEmailFactor(factors);
+
+    // Request MFA token for the factor.
+    const mfaToken = await this.requestMfaCode(factor, authInfo);
+
+    // Retrieve MFA code from email server.
+    const mfaCode = await this.getMfaCodeFromEmail();
   }
 
   async getAuthToken(): Promise<AuthResponse> {
@@ -126,6 +101,39 @@ export class ArloAuthenticator {
     return await this.httpRequest(request);
   }
 
+  async requestMfaCode(
+    factor: MfaFactor,
+    auth: AuthResponse
+  ): Promise<MfaRequestResponse> {
+    const request: HttpRequest = {
+      verb: 'POST',
+      url: AUTH_URLS_MFA.REQUEST_MFA_CODE,
+      headers: Object.assign(this.headers(), { authorization: auth.authToken }),
+      body: {
+        factorId: factor.factorId,
+        factorType: factor.factorType,
+        userId: auth.userID,
+      },
+    };
+
+    return await this.httpRequest<MfaRequestResponse>(request);
+  }
+
+  async getMfaCodeFromEmail(): Promise<number> {
+    const emailConfig = {
+      imap: {
+        user: this.config.emailUser,
+        password: this.config.emailPassword,
+        host: this.config.emailServer,
+        port: this.config.emailImapPort,
+        authTimeout: 10000,
+      },
+    };
+
+
+    return 69;
+  }
+
   private async httpRequest<T>(request: HttpRequest): Promise<T> {
     const options = {
       withCredentials: true,
@@ -142,6 +150,18 @@ export class ArloAuthenticator {
     }
 
     return response.data;
+  }
+
+  private findEmailFactor(factors: Array<MfaFactor>): MfaFactor {
+    const factor = factors.find((factor) =>
+      stringsEqualInsensitive(factor.displayName, this.config.emailUser)
+    );
+    if (factor === undefined) {
+      throw new Error(
+        `Unable to find a MFA option matching configured email address '${this.config.emailUser}'`
+      );
+    }
+    return factor;
   }
 
   private headers(): Record<string, string> {

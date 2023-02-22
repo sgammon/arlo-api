@@ -16,7 +16,7 @@ export interface Configuration {
    */
   emailPassword: string;
   /**
-   * Email IMAP server. E.g. `imap.google.com`
+   * Email IMAP server. E.g. `imap.gmail.com`
    */
   emailServer: string;
   /**
