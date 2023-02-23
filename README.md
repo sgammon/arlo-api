@@ -1,5 +1,7 @@
 # arlo-api
 
+<a href="https://www.npmjs.com/package/arlo-api"><img title="npm version" src="https://badgen.net/npm/v/arlo-api" ></a>
+
 Thin API for authenticating with Arlo
 
 <img src="./images/logo.png" alt="arlo-api-logo" width='162' />

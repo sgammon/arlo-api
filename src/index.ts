@@ -1,3 +1,3 @@
 import { ArloAuthenticator } from './arlo-authenticator';
 
-export { ArloAuthenticator };
+export default ArloAuthenticator;
