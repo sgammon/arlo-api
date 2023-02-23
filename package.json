@@ -1,6 +1,6 @@
 {
   "name": "arlo-api",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Thin API for authenticating with Arlo",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
@@ -24,6 +24,10 @@
   "type": "module",
   "author": "Will O'Donnell",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wo-d/arlo-api"
+  },
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.2",
     "@types/imap-simple": "^4.2.5",
