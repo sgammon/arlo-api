@@ -15,6 +15,7 @@ import {
   MfaFactor,
   MfaFactorResponse,
   MfaRequestResponse,
+  SessionResponse,
   VerifyResponse,
 } from './interfaces/arlo-auth-interfaces';
 import imaps, { ImapSimpleOptions } from 'imap-simple';
@@ -58,6 +59,7 @@ export class ArloAuthenticator {
    * - Requests MFA OTP code to be sent to the email username
    * - Logins to the email server via IMAP and retrieves OTP code
    * - Submits the MFA code and verifies the MFA flow is complete
+   * - Finally creates a new session.
    *
    * Returns the necessary information to make further requests.
    */
@@ -101,10 +103,14 @@ export class ArloAuthenticator {
       mfaSubmitResponse.authorization
     );
 
+    // Kick off a new session.
+    const sessionResponse = await this.newSession(mfaSubmitResponse.token);
+
     return {
-      authenticated: authInfo.authenticated,
-      headerAuthorization: mfaSubmitResponse.authorization,
-      userId: authInfo.userID,
+      serialNumber: sessionResponse.serialNumber,
+      sessionExpires: mfaSubmitResponse.tokenExpires,
+      token: sessionResponse.token,
+      userId: sessionResponse.userId,
     };
   }
 
@@ -172,7 +178,7 @@ export class ArloAuthenticator {
 
   /**
    * Retrieves Arlo MFA code from email. The email is expected to be unread.
-   * Will retry 3-times with a one-second delay between attempts.
+   * Will retry 3-times with a five-second delay between attempts.
    */
   async getMfaCodeFromEmail(): Promise<number> {
     const emailConfig: ImapSimpleOptions = {
@@ -200,7 +206,7 @@ export class ArloAuthenticator {
           throw e;
         }
       }
-      await this.delay(oneSecond);
+      await this.delay(oneSecond * 5);
     }
 
     throw new Error('Unable to retrieve MFA code');
@@ -227,6 +233,14 @@ export class ArloAuthenticator {
       authorization: Buffer.from(response.token).toString('base64'),
       tokenExpires: response.expiresIn,
     };
+  }
+
+  async newSession(token: string): Promise<SessionResponse> {
+    return await this.httpRequest<SessionResponse>({
+      verb: 'GET',
+      headers: Object.assign(this.headers(), { authorization: token }),
+      url: AUTH_URLS_MFA.START_NEW_SESSION,
+    });
   }
 
   /**
@@ -291,11 +305,13 @@ export class ArloAuthenticator {
 
     const response = (await this.axiosClient(options)).data;
 
-    if (response.meta.code !== 200) {
-      throw new Error(`Error code received ${response.meta.code}`);
+    if (response.success || response.meta?.code === 200) {
+      return response.data;
     }
 
-    return response.data;
+    throw new Error(
+      `Error code received ${response.meta.code}: ${response.meta.message}`
+    );
   }
 
   private findEmailFactor(factors: Array<MfaFactor>): MfaFactor {

@@ -71,7 +71,28 @@ export interface VerifyResponse {
 }
 
 export interface LoginResult {
-  headerAuthorization: string;
-  authenticated: number;
+  token: string;
   userId: string;
+  serialNumber: string;
+  sessionExpires: number;
+}
+
+export interface SessionResponse {
+  userId: string;
+  email: string;
+  token: string;
+  paymentId: string;
+  accountStatus: string;
+  serialNumber: string;
+  countryCode: string;
+  tocUpdate: boolean;
+  policyUpdate: boolean;
+  appStore: any;
+  validEmail: boolean;
+  arlo: boolean;
+  arloApp: boolean;
+  dateCreated: number;
+  mailProgramChecked: boolean;
+  supportsMultiLocation: boolean;
+  canUserMigrate: boolean;
 }
