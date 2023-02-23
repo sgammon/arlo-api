@@ -104,6 +104,7 @@ export class ArloAuthenticator {
     return {
       authenticated: authInfo.authenticated,
       headerAuthorization: mfaSubmitResponse.authorization,
+      userId: authInfo.userID,
     };
   }
 
