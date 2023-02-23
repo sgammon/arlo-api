@@ -11,7 +11,7 @@ const config: Configuration = {
 };
 
 /**
- * These tests are just provide a convenient debug point and therefore
+ * These tests just provide a convenient debug point and therefore
  * have no assertions.
  */
 describe('arlo-authenticator', function () {
@@ -21,7 +21,7 @@ describe('arlo-authenticator', function () {
     const code = await arlo.getMfaCodeFromEmail();
   });
 
-  test('does some stuff', async () => {
+  test('logs in to Arlo', async () => {
     const arlo = new ArloAuthenticator(config);
 
     const result = await arlo.login();

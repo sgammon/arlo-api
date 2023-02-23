@@ -71,6 +71,6 @@ export interface VerifyResponse {
 }
 
 export interface LoginResult {
-  headerAuthorization: string,
-  authenticated: number,
+  headerAuthorization: string;
+  authenticated: number;
 }

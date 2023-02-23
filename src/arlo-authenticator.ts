@@ -1,15 +1,15 @@
 import { Configuration } from './configuration';
 import ARLO_URLS from './constants/arlo-urls';
 import AUTH_URLS_MFA from './constants/auth-urls-mfa';
-
 import { CookieJar } from 'tough-cookie';
 import { wrapper } from 'axios-cookiejar-support';
 import axios, { AxiosInstance } from 'axios';
-import { stringsEqualInsensitive } from './utils';
+import { assertDefined, stringsEqualInsensitive } from './utils';
 import {
   ArloAuthResponse,
   AuthResponse,
-  HttpRequest, LoginResult,
+  HttpRequest,
+  LoginResult,
   MfaAuth,
   MfaAuthResponse,
   MfaFactor,
@@ -40,7 +40,13 @@ export class ArloAuthenticator {
    * @param configuration Returns an unmodified valid configuration.
    */
   private validateConfiguration(configuration: Configuration): Configuration {
-    // TODO: Validate configuration.
+    assertDefined(configuration.arloUser, 'arloUser');
+    assertDefined(configuration.arloPassword, 'arloPassword');
+    assertDefined(configuration.emailUser, 'emailUser');
+    assertDefined(configuration.emailPassword, 'emailPassword');
+    assertDefined(configuration.emailServer, 'emailServer');
+    assertDefined(configuration.emailImapPort, 'emailImapPort');
+
     return configuration;
   }
 
@@ -63,7 +69,7 @@ export class ArloAuthenticator {
       } catch (e) {
         reject(e);
       }
-    })
+    });
   }
 
   private async _login(): Promise<LoginResult> {
@@ -98,7 +104,7 @@ export class ArloAuthenticator {
     return {
       authenticated: authInfo.authenticated,
       headerAuthorization: mfaSubmitResponse.authorization,
-    }
+    };
   }
 
   async getAuthToken(): Promise<AuthResponse> {
