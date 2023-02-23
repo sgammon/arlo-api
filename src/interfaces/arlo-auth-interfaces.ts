@@ -19,6 +19,16 @@ export interface ArloAuthResponse {
   MFA_State: string;
 }
 
+export interface MfaAuthResponse extends ArloAuthResponse {
+  browserAuthCode: string;
+}
+
+export interface MfaAuth {
+  token: string;
+  authorization: string;
+  tokenExpires: number;
+}
+
 export interface MfaRequestResponse {
   factorAuthCode: string;
 }
@@ -44,4 +54,23 @@ export interface MfaFactor {
   applicationId: string;
   applicationName: string;
   factorRole: FactorRole;
+}
+
+export interface VerifyResponse {
+  firstName: string;
+  lastName: string;
+  country: string;
+  language: string;
+  acceptedPolicy: number;
+  currentPolicy: number;
+  emailConfirmed: boolean;
+  mfa: boolean;
+  mfaSetup: string;
+  MFA_State: string;
+  tokenValidated: boolean;
+}
+
+export interface LoginResult {
+  headerAuthorization: string,
+  authenticated: number,
 }

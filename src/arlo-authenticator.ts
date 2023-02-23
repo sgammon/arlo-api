@@ -9,11 +9,17 @@ import { stringsEqualInsensitive } from './utils';
 import {
   ArloAuthResponse,
   AuthResponse,
-  HttpRequest,
+  HttpRequest, LoginResult,
+  MfaAuth,
+  MfaAuthResponse,
   MfaFactor,
   MfaFactorResponse,
   MfaRequestResponse,
+  VerifyResponse,
 } from './interfaces/arlo-auth-interfaces';
+import imaps, { ImapSimpleOptions } from 'imap-simple';
+import { simpleParser } from 'mailparser';
+import parse from 'node-html-parser';
 
 export class ArloAuthenticator {
   private config: Configuration;
@@ -38,7 +44,29 @@ export class ArloAuthenticator {
     return configuration;
   }
 
-  async login() {
+  /**
+   * Login operations order...
+   *
+   * - Gets authentication token using Arlo credentials
+   * - Finds the MFA factor matching the configuration's email username
+   * - Requests MFA OTP code to be sent to the email username
+   * - Logins to the email server via IMAP and retrieves OTP code
+   * - Submits the MFA code and verifies the MFA flow is complete
+   *
+   * Returns the necessary information to make further requests.
+   */
+  async login(): Promise<LoginResult> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const loginResult = await this._login();
+        resolve(loginResult);
+      } catch (e) {
+        reject(e);
+      }
+    })
+  }
+
+  private async _login(): Promise<LoginResult> {
     // Get authentication token.
     const authInfo = await this.getAuthToken();
 
@@ -53,6 +81,24 @@ export class ArloAuthenticator {
 
     // Retrieve MFA code from email server.
     const mfaCode = await this.getMfaCodeFromEmail();
+
+    // Submit the MFA code and the MFA token.
+    const mfaSubmitResponse = await this.submitMfaCode(
+      authInfo.authToken,
+      mfaToken,
+      mfaCode
+    );
+
+    // Verify the code. Note: This is really only a debug thing for now.
+    const verificationResponse = await this.verifyAuthToken(
+      authInfo.authenticated,
+      mfaSubmitResponse.authorization
+    );
+
+    return {
+      authenticated: authInfo.authenticated,
+      headerAuthorization: mfaSubmitResponse.authorization,
+    }
   }
 
   async getAuthToken(): Promise<AuthResponse> {
@@ -81,31 +127,31 @@ export class ArloAuthenticator {
   }
 
   async getFactors(token: string): Promise<Array<MfaFactor>> {
-    const request: HttpRequest = {
-      verb: 'GET',
-      url: `${AUTH_URLS_MFA.GET_FACTORS}${token}`,
-      headers: Object.assign(this.headers(), { authorization: token }),
-    };
-
-    const response = await this.httpRequest<MfaFactorResponse>(request);
-    return response.items;
+    return (
+      await this.httpRequest<MfaFactorResponse>({
+        verb: 'GET',
+        url: `${AUTH_URLS_MFA.GET_FACTORS}${token}`,
+        headers: Object.assign(this.headers(), { authorization: token }),
+      })
+    ).items;
   }
 
-  async verifyAuthToken(token: string) {
-    const request: HttpRequest = {
+  async verifyAuthToken(
+    authenticated: number,
+    headerToken: string
+  ): Promise<VerifyResponse> {
+    return await this.httpRequest<VerifyResponse>({
       verb: 'GET',
-      url: `${AUTH_URLS_MFA.VERIFY_AUTH}${token}`,
-      headers: Object.assign(this.headers(), { authorization: token }),
-    };
-
-    return await this.httpRequest(request);
+      url: `${AUTH_URLS_MFA.VERIFY_AUTH}${authenticated}`,
+      headers: Object.assign(this.headers(), { authorization: headerToken }),
+    });
   }
 
   async requestMfaCode(
     factor: MfaFactor,
     auth: AuthResponse
   ): Promise<MfaRequestResponse> {
-    const request: HttpRequest = {
+    return await this.httpRequest<MfaRequestResponse>({
       verb: 'POST',
       url: AUTH_URLS_MFA.REQUEST_MFA_CODE,
       headers: Object.assign(this.headers(), { authorization: auth.authToken }),
@@ -114,24 +160,117 @@ export class ArloAuthenticator {
         factorType: factor.factorType,
         userId: auth.userID,
       },
-    };
-
-    return await this.httpRequest<MfaRequestResponse>(request);
+    });
   }
 
+  /**
+   * Retrieves Arlo MFA code from email. The email is expected to be unread.
+   * Will retry 3-times with a one-second delay between attempts.
+   */
   async getMfaCodeFromEmail(): Promise<number> {
-    const emailConfig = {
+    const emailConfig: ImapSimpleOptions = {
       imap: {
         user: this.config.emailUser,
         password: this.config.emailPassword,
         host: this.config.emailServer,
         port: this.config.emailImapPort,
-        authTimeout: 10000,
+        tls: true,
+        authTimeout: 3000,
+        tlsOptions: {
+          servername: this.config.emailServer,
+        },
       },
     };
 
+    const maxTries = 4;
+    const oneSecond = 1000;
+    for (let i = 0; i < maxTries; ++i) {
+      try {
+        return await this._getMfaCodeFromEmail(emailConfig);
+      } catch (e) {
+        // Throw the exception if we're at the last iteration.
+        if (i + 1 === maxTries) {
+          throw e;
+        }
+      }
+      await this.delay(oneSecond);
+    }
 
-    return 69;
+    throw new Error('Unable to retrieve MFA code');
+  }
+
+  async submitMfaCode(
+    token: string,
+    mfaRequestResponse: MfaRequestResponse,
+    mfaCode: number
+  ): Promise<MfaAuth> {
+    const response = await this.httpRequest<MfaAuthResponse>({
+      verb: 'POST',
+      headers: Object.assign(this.headers(), { authorization: token }),
+      url: AUTH_URLS_MFA.SUBMIT_MFACODE,
+      body: {
+        factorAuthCode: mfaRequestResponse.factorAuthCode,
+        isBrowserTrusted: true,
+        otp: mfaCode,
+      },
+    });
+
+    return {
+      token: response.token,
+      authorization: Buffer.from(response.token).toString('base64'),
+      tokenExpires: response.expiresIn,
+    };
+  }
+
+  /**
+   * - Connects to IMAP INBOX
+   * - Searches for any emails which are unseen and have an Arlo auth code subject
+   * - Marks retrieved emails as seen
+   * - Finds most recent email if there are multiple
+   * - Parses email body to retrieve code
+   */
+  private async _getMfaCodeFromEmail(emailConfig: ImapSimpleOptions) {
+    return await imaps.connect(emailConfig).then(function (connection) {
+      return connection.openBox('INBOX').then(function () {
+        const searchCriteria = [
+          ['UNSEEN'],
+          ['SUBJECT', 'Your one-time authentication code from Arlo'],
+        ];
+
+        const fetchOptions = {
+          bodies: ['TEXT'],
+          markSeen: true,
+          struct: true,
+        };
+
+        return connection
+          .search(searchCriteria, fetchOptions)
+          .then(async function (results) {
+            if (results.length === 0) {
+              throw new Error('No emails found matching search criteria');
+            }
+
+            // @ts-ignore - Reason: the typing in the library is incorrect
+            results.sort((a, b) => b.seqNo - a.seqNo);
+
+            const body = results[0].parts[0].body;
+            const email = await simpleParser(body);
+            if (typeof email.html === 'boolean') {
+              throw new Error('Somehow the html property is a boolean');
+            }
+
+            // Note: As of 2023-02-22 there is a single header which contains the code
+            // This section is very error-prone and makes a lot of assumptions based on current state
+            const root = parse(email.html);
+            const codes = root.querySelector('h1')?.innerText.match(/\d{6}/);
+            if (codes === undefined || codes === null) {
+              throw new Error('Unable to find a matching code');
+            }
+
+            return Number.parseInt(codes[0]);
+          });
+      });
+    });
   }
 
   private async httpRequest<T>(request: HttpRequest): Promise<T> {
@@ -184,4 +323,7 @@ export class ArloAuthenticator {
       source: 'arloCamWeb',
     };
   }
+
+  private delay = (ms: number) =>
+    new Promise((resolve) => setTimeout(resolve, ms));
 }
