@@ -1,7 +1,7 @@
 {
   "name": "arlo-api",
   "version": "1.0.0",
-  "description": "Thin API for authenticating and communicating with Arlo devices",
+  "description": "Thin API for authenticating with Arlo",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
   "files": [
