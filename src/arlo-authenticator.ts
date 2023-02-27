@@ -18,11 +18,12 @@ import {
   SessionResponse,
   VerifyResponse,
 } from './interfaces/arlo-auth-interfaces';
-import imaps, { ImapSimpleOptions } from 'imap-simple';
+import { ImapSimpleOptions } from 'imap-simple';
+import * as imaps from 'imap-simple';
 import { simpleParser } from 'mailparser';
 import parse from 'node-html-parser';
 
-export class ArloAuthenticator {
+export default class ArloAuthenticator {
   private config: Configuration;
   private readonly axiosClient: AxiosInstance;
 
@@ -251,7 +252,7 @@ export class ArloAuthenticator {
    * - Parses email body to retrieve code
    */
   private async _getMfaCodeFromEmail(emailConfig: ImapSimpleOptions) {
-    return await imaps.connect(emailConfig).then(function (connection) {
+    return await imaps.connect(emailConfig).then(function (connection: imaps.ImapSimple) {
       return connection.openBox('INBOX').then(function () {
         const searchCriteria = [
           ['UNSEEN'],
@@ -266,7 +267,7 @@ export class ArloAuthenticator {
 
         return connection
           .search(searchCriteria, fetchOptions)
-          .then(async function (results) {
+          .then(async function (results: imaps.Message[]) {
             if (results.length === 0) {
               throw new Error('No emails found matching search criteria');
             }

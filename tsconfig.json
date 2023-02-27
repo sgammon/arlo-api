@@ -1,16 +1,18 @@
 {
   "compilerOptions": {
-    "target": "ES2015",
-    "module": "ES2020",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "outDir": "./dist/esm",
     "declaration": true,
-    "moduleResolution": "node"
+    "lib": ["ES6"],
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "noEmitOnError": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "outDir": "dist/commonjs",
+    "removeComments": true,
+    "rootDir": "src",
+    "sourceMap": true,
+    "target": "ES6"
   },
-  "$schema": "https://json.schemastore.org/tsconfig",
-  "display": "Recommended",
+  "include": ["src"],
   "exclude": ["./src/tests/", "./node_modules/", "./dist/"]
 }

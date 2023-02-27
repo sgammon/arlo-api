@@ -1,11 +1,10 @@
 {
   "name": "arlo-api",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Thin API for authenticating with Arlo",
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
+  "main": "dist/commonjs/index.js",
   "files": [
-    "dist/"
+    "dist/**/*"
   ],
   "keywords": [
     "arlo",
@@ -14,19 +13,21 @@
   ],
   "scripts": {
     "clean": "rimraf dist",
-    "tsc": "tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
+    "tsc": "tsc -p tsconfig.json",
     "prepublish": "npm run tsc",
     "build": "npm run clean && npm run tsc",
     "test": "npm run build && jest",
     "typecheck": "tsc --noEmit",
     "pretty": "npx prettier --write ."
   },
-  "type": "module",
   "author": "Will O'Donnell",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/wo-d/arlo-api"
+  },
+  "bugs": {
+    "url": "https://github.com/wo-d/arlo-api/issues"
   },
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.2",
