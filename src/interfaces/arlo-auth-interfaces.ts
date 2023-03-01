@@ -2,23 +2,23 @@ import { ResponseType } from 'axios';
 import { FactorRole, FactorType, Verb } from '../types';
 
 export interface HttpRequest {
-  verb: Verb;
-  url: string;
   body?: Record<string, any>;
   headers: object;
   responseType?: ResponseType;
+  url: string;
+  verb: Verb;
 }
 
 export interface ArloAuthResponse {
-  token: string;
-  userId: string;
-  authenticated: number;
-  issued: number;
-  expiresIn: number;
-  mfa: boolean;
-  authCompleted: boolean;
-  type: string;
   MFA_State: string;
+  authCompleted: boolean;
+  authenticated: number;
+  expiresIn: number;
+  issued: number;
+  mfa: boolean;
+  token: string;
+  type: string;
+  userId: string;
 }
 
 export interface MfaAuthResponse extends ArloAuthResponse {
@@ -26,8 +26,8 @@ export interface MfaAuthResponse extends ArloAuthResponse {
 }
 
 export interface MfaAuth {
-  token: string;
   authorization: string;
+  token: string;
   tokenExpires: number;
 }
 
@@ -49,61 +49,61 @@ export interface MfaFactorResponse {
 }
 
 export interface MfaFactor {
-  factorId: string;
-  factorType: FactorType;
-  displayName: string;
-  factorNickname: string;
   applicationId: string;
   applicationName: string;
+  displayName: string;
+  factorId: string;
+  factorNickname: string;
   factorRole: FactorRole;
+  factorType: FactorType;
 }
 
 export interface VerifyResponse {
-  firstName: string;
-  lastName: string;
-  country: string;
-  language: string;
+  MFA_State: string;
   acceptedPolicy: number;
+  country: string;
   currentPolicy: number;
   emailConfirmed: boolean;
+  firstName: string;
+  language: string;
+  lastName: string;
   mfa: boolean;
   mfaSetup: string;
-  MFA_State: string;
   tokenValidated: boolean;
 }
 
 export interface LoginResult {
-  token: string;
-  userId: string;
   serialNumber: string;
   sessionExpires: number;
+  token: string;
+  userId: string;
 }
 
 export interface SessionResponse {
-  userId: string;
-  email: string;
-  token: string;
-  paymentId: string;
   accountStatus: string;
-  serialNumber: string;
-  countryCode: string;
-  tocUpdate: boolean;
-  policyUpdate: boolean;
   appStore: any;
-  validEmail: boolean;
   arlo: boolean;
   arloApp: boolean;
-  dateCreated: number;
-  mailProgramChecked: boolean;
-  supportsMultiLocation: boolean;
   canUserMigrate: boolean;
+  countryCode: string;
+  dateCreated: number;
+  email: string;
+  mailProgramChecked: boolean;
+  paymentId: string;
+  policyUpdate: boolean;
+  serialNumber: string;
+  supportsMultiLocation: boolean;
+  tocUpdate: boolean;
+  token: string;
+  userId: string;
+  validEmail: boolean;
 }
 
 export interface ArloResponse<T> {
-  success: boolean;
   data: T;
   meta: {
     code: number;
     message: string;
   };
+  success: boolean;
 }

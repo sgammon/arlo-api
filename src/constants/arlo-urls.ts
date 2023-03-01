@@ -2,31 +2,31 @@ const API_DOMAIN = 'myapi.arlo.com';
 
 export interface ArloUrls {
   API_ROOT: string;
-  BASE_URL: string;
-  WEB: string;
-  LOGOUT: string;
-  WEB_CLIENT: string;
-  SUBSCRIBE: string;
-  UNSUBSCRIBE: string;
-  WEB_USERS: string;
-  DEVICES_V2: string;
-  DEVICES: string;
-  DEVICE: string;
   AUTOMATIONACTIVE: string;
-  RESTART_BASESTATION: string;
-  SERVICE_LEVEL_SETTINGS: string;
-  SERVICE_LEVELS: string;
+  BASE_URL: string;
   CAPABILITIES: string;
-  FEATURES: string;
+  DEVICE: string;
+  DEVICES: string;
+  DEVICES_V2: string;
   EMERGENCY_LOCATIONS: string;
+  FEATURES: string;
+  LIBRARY: string;
+  LIBRARY_SUMMARY: string;
+  LOGOUT: string;
   NOTIFY: string;
+  RESTART_BASESTATION: string;
+  SERVICE_LEVELS: string;
+  SERVICE_LEVEL_SETTINGS: string;
   SET_DEVICE_NAME: string;
+  SNAPSHOT: string;
+  START_NEW_SESSION: string;
   START_STREAM: string;
   STOP_STREAM: string;
-  SNAPSHOT: string;
-  LIBRARY_SUMMARY: string;
-  LIBRARY: string;
-  START_NEW_SESSION: string;
+  SUBSCRIBE: string;
+  UNSUBSCRIBE: string;
+  WEB: string;
+  WEB_CLIENT: string;
+  WEB_USERS: string;
 }
 
 const ARLO_URLS: ArloUrls = {
@@ -44,9 +44,9 @@ const ARLO_URLS: ArloUrls = {
   LOGOUT: '',
   NOTIFY: '',
   RESTART_BASESTATION: '',
-  SET_DEVICE_NAME: '',
   SERVICE_LEVELS: '',
   SERVICE_LEVEL_SETTINGS: '',
+  SET_DEVICE_NAME: '',
   SNAPSHOT: '',
   START_NEW_SESSION: '',
   START_STREAM: '',

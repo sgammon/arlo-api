@@ -1,4 +1,4 @@
-import { ArloAuthenticator } from '../../dist';
+import { Client } from '../../dist';
 
 describe('distribution', () => {
   test('imports', () => {
@@ -11,7 +11,7 @@ describe('distribution', () => {
       emailImapPort: 993,
     };
 
-    const authenticator = new ArloAuthenticator(config);
+    const authenticator = new Client(config);
 
     expect(authenticator).toBeTruthy();
   });

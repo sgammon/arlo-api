@@ -1,17 +1,17 @@
 export interface ArloEvents {
-  message: string;
-  open: string;
-  error: string;
   close: string;
+  error: string;
+  message: string;
   motionAlert: string;
+  open: string;
 }
 
 const ARLO_EVENTS: ArloEvents = {
-  message: 'message',
-  open: 'open',
   close: 'close',
   error: 'error',
+  message: 'message',
   motionAlert: 'motionAlert',
+  open: 'open',
 }
 
 export default ARLO_EVENTS;
