@@ -80,6 +80,10 @@ export class Client {
     return result;
   }
 
+  _shortCircuitLogin(login: LoginResult) {
+    this.loginResult = login;
+  }
+
   private async _login(): Promise<LoginResult> {
     // Get authentication token.
     const authInfo = await this.getAuthToken();

@@ -10,6 +10,8 @@ import {
 } from './interfaces/arlo-interfaces';
 import { createTransactionId } from './utils/helpers';
 import { assert } from './utils/utils';
+import { AxiosResponse } from 'axios';
+import ARLO_EVENTS from './constants/arlo-events';
 
 export class Basestation extends EventEmitter {
   client: Client;
@@ -62,18 +64,18 @@ export class Basestation extends EventEmitter {
           ...this.headers,
           xcloudId: this.basestation.xCloudId,
         },
-        url: ARLO_URLS.NOTIFY + this.basestation.deviceId, // TODO: This is a problem
+        url: `${ARLO_URLS.NOTIFY}/${this.basestation.deviceId}`,
         verb: 'POST',
       });
 
       const processData = (data: any): void => {
         if (data.transId === transId) {
-          this.removeListener('message', processData);
+          this.removeListener(ARLO_EVENTS.message, processData);
           resolve(data);
         }
       };
 
-      this.on('message', processData);
+      this.on(ARLO_EVENTS.message, processData);
     });
   }
 
@@ -99,16 +101,16 @@ export class Basestation extends EventEmitter {
   public async startStream(): Promise<void> {
     this.streaming = true;
 
-    const stream = await this.client.httpRequest<EventEmitter>({
+    let response: AxiosResponse = await this.client.axiosClient.get(ARLO_URLS.SUBSCRIBE, {
       headers: {
         ...this.headers,
         xcloudId: this.basestation.xCloudId,
-        Accept: 'text/event-stream',
+        Accept: 'text/event-stream'
       },
-      responseType: 'stream',
-      url: ARLO_URLS.SUBSCRIBE,
-      verb: 'GET',
+      responseType: 'stream'
     });
+
+    let stream = response.data;
 
     stream.on('data', (data: any) => this.message(data));
     stream.on('error', (error: any) => this.error(error));
@@ -128,15 +130,15 @@ export class Basestation extends EventEmitter {
     );
 
     if (data?.status === 'connected') {
-      return this.emit('open', 'Event stream opened');
+      return this.emit(ARLO_EVENTS.open, 'Event stream opened');
     }
 
-    return this.emit('message', data);
+    return this.emit(ARLO_EVENTS.message, data);
   }
 
   private error(error: any): boolean {
     this.streaming = false;
-    return this.emit('error', error);
+    return this.emit(ARLO_EVENTS.error, error);
   }
 
   /**
@@ -144,7 +146,7 @@ export class Basestation extends EventEmitter {
    * @returns {Promise<void>}
    */
   public async close(): Promise<void> {
-    this.emit('close', 'Event stream closed');
+    this.emit(ARLO_EVENTS.close, 'Event stream closed');
   }
 
   /**
@@ -188,9 +190,9 @@ export class Basestation extends EventEmitter {
    * Enables the 'motionAlert' event for the basestation.
    */
   public enableMotionAlerts(): boolean {
-    this.on('message', (data: any) => {
+    this.on(ARLO_EVENTS.message, (data: any) => {
       if (data?.properties?.motionDetected) {
-        this.emit('motionAlert', data);
+        this.emit(ARLO_EVENTS.motionAlert, data);
       }
     });
 

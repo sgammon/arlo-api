@@ -2,6 +2,8 @@ import { Camera } from '../camera';
 import { Client } from '../client';
 import { Configuration } from '../interfaces/configuration';
 import * as dotenv from 'dotenv'
+import { Basestation } from '../basestation';
+import { LoginResult } from '../interfaces/arlo-auth-interfaces';
 
 dotenv.config()
 
@@ -30,10 +32,29 @@ describe('arlo-authenticator', function () {
 
     const result = await arlo.login();
 
-    const device = await arlo.getDevice({ deviceType: 'doorbell' });
+    const device = await arlo.getDevice({ deviceType: 'basestation' });
 
-    const camera = new Camera(arlo, device);
+    const camera = new Basestation(arlo, device);
 
-    const alerts = await camera.getSmartAlerts();
+    const alerts = await camera.getState();
   });
+
+  test('it interrogates the basestation', async () => {
+    const arlo = new Client(config);
+
+    const loginResult: LoginResult = {
+      serialNumber: process.env.SERIAL_NUMBER as string,
+      sessionExpires: Number.parseInt(process.env.SESSION_EXPIRES as string),
+      token: process.env.TOKEN as string,
+      userId: process.env.USER_ID as string
+    }
+
+    arlo._shortCircuitLogin(loginResult);
+
+    const device = await arlo.getDevice({ deviceType: 'basestation' });
+
+    const basestation = new Basestation(arlo, device);
+
+    const state = await basestation.getState();
+  })
 });
