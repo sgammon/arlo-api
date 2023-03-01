@@ -1,4 +1,6 @@
-describe('dist', () => {
+import { ArloAuthenticator } from '../../dist';
+
+describe('distribution', () => {
   test('imports', () => {
     const config = {
       arloUser: 'test',
@@ -6,12 +8,11 @@ describe('dist', () => {
       emailUser: 'test@gmail.com',
       emailPassword: 'test',
       emailServer: 'imap.gmail.com',
-      emailImapPort: 993
+      emailImapPort: 993,
     };
 
-    const { ArloAuthenticator } = require('../../dist/commonjs/index');
     const authenticator = new ArloAuthenticator(config);
 
     expect(authenticator).toBeTruthy();
-  })
-})
+  });
+});

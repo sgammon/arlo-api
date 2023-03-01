@@ -13,12 +13,14 @@ export interface ArloUrls {
   DEVICES: string;
   DEVICE: string;
   AUTOMATIONACTIVE: string;
+  RESTART_BASESTATION: string;
   SERVICE_LEVEL_SETTINGS: string;
   SERVICE_LEVELS: string;
   CAPABILITIES: string;
   FEATURES: string;
   EMERGENCY_LOCATIONS: string;
   NOTIFY: string;
+  SET_DEVICE_NAME: string;
   START_STREAM: string;
   STOP_STREAM: string;
   SNAPSHOT: string;
@@ -41,6 +43,8 @@ const ARLO_URLS: ArloUrls = {
   LIBRARY_SUMMARY: '',
   LOGOUT: '',
   NOTIFY: '',
+  RESTART_BASESTATION: '',
+  SET_DEVICE_NAME: '',
   SERVICE_LEVELS: '',
   SERVICE_LEVEL_SETTINGS: '',
   SNAPSHOT: '',
@@ -72,9 +76,11 @@ ARLO_URLS.CAPABILITIES = `${ARLO_URLS.WEB_USERS}/capabilities`;
 ARLO_URLS.FEATURES = `${ARLO_URLS.WEB_USERS}/subscription/smart/features`;
 ARLO_URLS.EMERGENCY_LOCATIONS = `${ARLO_URLS.WEB_USERS}/emergency/locations`;
 ARLO_URLS.NOTIFY = `${ARLO_URLS.DEVICES}/notify`;
+ARLO_URLS.RESTART_BASESTATION = `${ARLO_URLS.DEVICES}/restart`;
 ARLO_URLS.START_STREAM = `${ARLO_URLS.DEVICES}/startStream`;
 ARLO_URLS.STOP_STREAM = `${ARLO_URLS.DEVICES}/stopStream`;
 ARLO_URLS.SNAPSHOT = `${ARLO_URLS.DEVICES}/fullFrameSnapshot`;
+ARLO_URLS.SET_DEVICE_NAME = `${ARLO_URLS.DEVICES}/renameDevice`;
 ARLO_URLS.LIBRARY_SUMMARY = `${ARLO_URLS.WEB_USERS}/library/metadata`;
 ARLO_URLS.LIBRARY = `${ARLO_URLS.WEB_USERS}/library`;
 ARLO_URLS.START_NEW_SESSION = `https://${API_DOMAIN}/hmsweb/users/session/v2`;

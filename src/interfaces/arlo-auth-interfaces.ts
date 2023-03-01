@@ -1,3 +1,4 @@
+import { ResponseType } from 'axios';
 import { FactorRole, FactorType, Verb } from '../types';
 
 export interface HttpRequest {
@@ -5,6 +6,7 @@ export interface HttpRequest {
   url: string;
   body?: Record<string, any>;
   headers: object;
+  responseType?: ResponseType;
 }
 
 export interface ArloAuthResponse {
@@ -95,4 +97,13 @@ export interface SessionResponse {
   mailProgramChecked: boolean;
   supportsMultiLocation: boolean;
   canUserMigrate: boolean;
+}
+
+export interface ArloResponse<T> {
+  success: boolean;
+  data: T;
+  meta: {
+    code: number;
+    message: string;
+  };
 }

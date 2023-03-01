@@ -1,13 +1,17 @@
-import { ArloAuthenticator } from '../arlo-authenticator';
-import { Configuration } from '../configuration';
+import { Camera } from '../camera';
+import { Client } from '../client';
+import { Configuration } from '../interfaces/configuration';
+import * as dotenv from 'dotenv'
+
+dotenv.config()
 
 const config: Configuration = {
-  emailImapPort: -1,
-  emailPassword: '',
-  emailServer: '',
-  emailUser: '',
-  arloUser: '',
-  arloPassword: '',
+  arloUser: process.env.ARLO_USER as string,
+  arloPassword: process.env.ARLO_PASSWORD as string,
+  emailUser: process.env.EMAIL_USER as string,
+  emailPassword: process.env.EMAIL_PASSWORD as string,
+  emailServer: 'imap.gmail.com',
+  emailImapPort: 993,
 };
 
 /**
@@ -16,14 +20,20 @@ const config: Configuration = {
  */
 describe('arlo-authenticator', function () {
   test('scrapes emails', async () => {
-    const arlo = new ArloAuthenticator(config);
+    const arlo = new Client(config);
 
     const code = await arlo.getMfaCodeFromEmail();
   });
 
   test('logs in to Arlo', async () => {
-    const arlo = new ArloAuthenticator(config);
+    const arlo = new Client(config);
 
     const result = await arlo.login();
+
+    const device = await arlo.getDevice({ deviceType: 'doorbell' });
+
+    const camera = new Camera(arlo, device);
+
+    const alerts = await camera.getSmartAlerts();
   });
 });
