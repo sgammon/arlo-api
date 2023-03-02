@@ -1,6 +1,6 @@
 {
   "name": "arlo-api",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Thin API for authenticating with Arlo",
   "main": "dist/index.js",
   "keywords": [
