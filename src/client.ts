@@ -80,7 +80,7 @@ export class Client {
     return result;
   }
 
-  _shortCircuitLogin(login: LoginResult) {
+  _shortCircuitLogin(login: LoginResult): void {
     this.loginResult = login;
   }
 
@@ -409,11 +409,11 @@ export class Client {
       DNT: '1',
       Origin: `https://${ARLO_URLS.BASE_URL}`,
       Referer: `https://${ARLO_URLS.BASE_URL}/`,
-      TE: 'Trailers',
       Source: 'arloCamWeb',
-      schemaVersion: '1',
+      TE: 'Trailers',
       'User-Agent':
         'Mozilla/5.0 (iPhone; CPU iPhone OS 11_1_2 like Mac OS X) AppleWebKit/604.3.5 (KHTML, like Gecko) Mobile/15B202 NETGEAR/v1 (iOS Vuezone)',
+      schemaVersion: '1',
     };
   }
 

@@ -1,13 +1,13 @@
 import { CookieJar } from 'tough-cookie';
-import { createTransactionId } from './utils/helpers';
-import { assert } from './utils/utils';
-import ARLO_URLS from './constants/arlo-urls';
 import { Client } from './client';
+import ARLO_URLS from './constants/arlo-urls';
 import {
   DEVICE_RESPONSE,
   HEADERS_TYPE,
   START_STREAM_RESPONSE,
 } from './interfaces/arlo-interfaces';
+import { createTransactionId } from './utils/helpers';
+import { assert } from './utils/utils';
 
 /**
  * @param client - Base arlo client instance

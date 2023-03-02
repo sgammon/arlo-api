@@ -11,7 +11,7 @@ Thin API for interacting with Arlo
 ```ts
 const arlo = new Client(config);
 
-// `result` contains necessary information to make further requests 
+// `result` contains necessary information to make further requests
 // allowing you to consume just the login result in your library.
 const result = await arlo.login();
 
@@ -49,6 +49,7 @@ The `emailUser` must match one of the configured MFA sources in Arlo.
 Gmail has certain limitations when trying to connect from a third party app using just username and password. As of May 2022 Google blocked "less secure apps" from accessing their email services. You have to [manually opt in](https://support.google.com/accounts/answer/6010255?hl=en) and then set up a separate password for a third party. Additionally, you must [enable IMAP](https://support.google.com/mail/answer/7126229?hl=en) in Gmail.
 
 ### Tests
+
 Tests make use of `dotenv` package for providing environment variables to the running process.
 
 Create a `.env` file at the root of the solution and supply it with whatever your secrets are.

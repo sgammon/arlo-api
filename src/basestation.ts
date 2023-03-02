@@ -1,18 +1,18 @@
+import { AxiosResponse } from 'axios';
 import { EventEmitter } from 'events';
 import { Camera } from './camera';
 import { Client } from './client';
+import ARLO_EVENTS from './constants/arlo-events';
 import ARLO_URLS from './constants/arlo-urls';
 import {
   DEVICE_RESPONSE,
-  EVENT_STREAM_RESPONSE,
   HEADERS_TYPE,
   NOTIFY_PAYLOAD,
 } from './interfaces/arlo-interfaces';
 import { createTransactionId } from './utils/helpers';
 import { assert } from './utils/utils';
-import { AxiosResponse } from 'axios';
-import ARLO_EVENTS from './constants/arlo-events';
 
+// noinspection JSUnusedGlobalSymbols
 export class Basestation extends EventEmitter {
   client: Client;
   userId: string;
@@ -85,11 +85,11 @@ export class Basestation extends EventEmitter {
   private async ping(): Promise<void> {
     const data = await this.notifyDevice({
       action: 'set',
-      resource: `subscriptions/${this.userId}_web`,
       properties: {
         devices: [this.basestation.deviceId],
       },
       publishResponse: false,
+      resource: `subscriptions/${this.userId}_web`,
     });
 
     this.emit('pong', data);
@@ -101,21 +101,24 @@ export class Basestation extends EventEmitter {
   public async startStream(): Promise<void> {
     this.streaming = true;
 
-    let response: AxiosResponse = await this.client.axiosClient.get(ARLO_URLS.SUBSCRIBE, {
-      headers: {
-        ...this.headers,
-        xcloudId: this.basestation.xCloudId,
-        Accept: 'text/event-stream'
-      },
-      responseType: 'stream'
-    });
+    const response: AxiosResponse = await this.client.axiosClient.get(
+      ARLO_URLS.SUBSCRIBE,
+      {
+        headers: {
+          ...this.headers,
+          xcloudId: this.basestation.xCloudId,
+          Accept: 'text/event-stream',
+        },
+        responseType: 'stream',
+      }
+    );
 
-    let stream = response.data;
+    const stream = response.data;
 
     stream.on('data', (data: any) => this.message(data));
     stream.on('error', (error: any) => this.error(error));
 
-    //ping event stream every 30 seconds
+    // Ping event stream every 30 seconds
     this.pingInterval = setInterval(() => this.ping(), 30 * 1000);
 
     return;
@@ -132,6 +135,9 @@ export class Basestation extends EventEmitter {
     if (data?.status === 'connected') {
       return this.emit(ARLO_EVENTS.open, 'Event stream opened');
     }
+    if (data?.action === 'logout' || data?.status === 'disconnected') {
+      return this.emit(ARLO_EVENTS.close, 'Event stream disconnected');
+    }
 
     return this.emit(ARLO_EVENTS.message, data);
   }
@@ -146,7 +152,14 @@ export class Basestation extends EventEmitter {
    * @returns {Promise<void>}
    */
   public async close(): Promise<void> {
-    this.emit(ARLO_EVENTS.close, 'Event stream closed');
+    await this.client.httpRequest({
+      headers: {
+        ...this.headers,
+        xcloudId: this.basestation.xCloudId,
+      },
+      url: ARLO_URLS.UNSUBSCRIBE,
+      verb: 'GET',
+    });
   }
 
   /**
@@ -183,6 +196,20 @@ export class Basestation extends EventEmitter {
       url: ARLO_URLS.RESTART_BASESTATION,
       verb: 'POST',
     });
+  }
+
+  /**
+   * Enables receiving explicit doorbell events. The associated event
+   * is ARLO_EVENTS.doorbellAlert
+   */
+  public enableDoorbellAlerts(): boolean {
+    this.on(ARLO_EVENTS.message, (data: any) => {
+      if (data?.properties?.buttonPressed) {
+        this.emit(ARLO_EVENTS.doorbellAlert, data);
+      }
+    });
+
+    return true;
   }
 
   /**

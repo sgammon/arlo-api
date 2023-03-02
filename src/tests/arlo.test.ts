@@ -1,11 +1,10 @@
-import { Camera } from '../camera';
-import { Client } from '../client';
-import { Configuration } from '../interfaces/configuration';
-import * as dotenv from 'dotenv'
+import * as dotenv from 'dotenv';
 import { Basestation } from '../basestation';
+import { Client } from '../client';
 import { LoginResult } from '../interfaces/arlo-auth-interfaces';
+import { Configuration } from '../interfaces/configuration';
 
-dotenv.config()
+dotenv.config();
 
 const config: Configuration = {
   arloUser: process.env.ARLO_USER as string,
@@ -46,8 +45,8 @@ describe('arlo-authenticator', function () {
       serialNumber: process.env.SERIAL_NUMBER as string,
       sessionExpires: Number.parseInt(process.env.SESSION_EXPIRES as string),
       token: process.env.TOKEN as string,
-      userId: process.env.USER_ID as string
-    }
+      userId: process.env.USER_ID as string,
+    };
 
     arlo._shortCircuitLogin(loginResult);
 
@@ -56,5 +55,5 @@ describe('arlo-authenticator', function () {
     const basestation = new Basestation(arlo, device);
 
     const state = await basestation.getState();
-  })
+  });
 });

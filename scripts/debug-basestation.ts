@@ -1,11 +1,9 @@
-import { Client } from '../dist';
-import { Basestation } from '../dist';
 import * as dotenv from 'dotenv';
-import { Configuration } from '../dist';
-import { LoginResult } from '../dist/interfaces/arlo-auth-interfaces';
+import { Basestation, Client, Configuration } from '../dist';
 import ARLO_EVENTS from '../dist/constants/arlo-events';
+import { LoginResult } from '../dist/interfaces/arlo-auth-interfaces';
 
-dotenv.config()
+dotenv.config();
 
 const config: Configuration = {
   arloUser: process.env.ARLO_USER as string,
@@ -23,8 +21,8 @@ const config: Configuration = {
     serialNumber: process.env.SERIAL_NUMBER as string,
     sessionExpires: Number.parseInt(process.env.SESSION_EXPIRES as string),
     token: process.env.TOKEN as string,
-    userId: process.env.USER_ID as string
-  }
+    userId: process.env.USER_ID as string,
+  };
 
   arlo._shortCircuitLogin(loginResult);
 
@@ -35,13 +33,12 @@ const config: Configuration = {
   // Subscribe to basestation events.
   basestation.on(ARLO_EVENTS.open, () => {
     console.log('stream opened');
-  })
+  });
 
   basestation.on(ARLO_EVENTS.close, () => {
     console.log('stream closed');
-  })
+  });
 
   console.log('starting stream');
   await basestation.startStream();
 })();
-
