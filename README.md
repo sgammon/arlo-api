@@ -1,5 +1,7 @@
 # arlo-api
 
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/wo-d/arlo-api/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/wo-d/arlo-api/tree/main)
+
 <a href="https://www.npmjs.com/package/arlo-api"><img title="npm version" src="https://badgen.net/npm/v/arlo-api" ></a>
 
 Thin API for interacting with Arlo
@@ -59,6 +61,30 @@ ARLO_USER="user@gmail.com"
 ARLO_PASSWORD="password"
 EMAIL_USER="other_user@gmail.com"
 EMAIL_PASSWORD="password2"
+```
+
+You can also skip the login flow if you've already received a login result object and instead use the following secrets.
+
+```
+SERIAL_NUMBER="serial"
+SESSION_EXPIRES="session_expiration"
+TOKEN="token"
+USER_ID="userId"
+```
+
+And then use the provided `_shortCircuitLogin` method.
+
+```ts
+const arlo = new Client(config);
+
+const loginResult: LoginResult = {
+    serialNumber: process.env.SERIAL_NUMBER as string,
+    sessionExpires: Number.parseInt(process.env.SESSION_EXPIRES as string),
+    token: process.env.TOKEN as string,
+    userId: process.env.USER_ID as string,
+};
+
+arlo._shortCircuitLogin(loginResult);
 ```
 
 ### References
