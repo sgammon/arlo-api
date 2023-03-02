@@ -16,7 +16,7 @@
     "tsc": "tsc -p tsconfig.json",
     "prepublish": "npm run tsc",
     "build": "npm run clean && npm run tsc",
-    "test": "npm run build && jest",
+    "test": "jest",
     "typecheck": "tsc --noEmit",
     "pretty": "npx prettier --write ."
   },
