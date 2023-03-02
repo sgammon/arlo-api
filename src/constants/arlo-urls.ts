@@ -2,29 +2,31 @@ const API_DOMAIN = 'myapi.arlo.com';
 
 export interface ArloUrls {
   API_ROOT: string;
-  BASE_URL: string;
-  WEB: string;
-  LOGOUT: string;
-  WEB_CLIENT: string;
-  SUBSCRIBE: string;
-  UNSUBSCRIBE: string;
-  WEB_USERS: string;
-  DEVICES_V2: string;
-  DEVICES: string;
-  DEVICE: string;
   AUTOMATIONACTIVE: string;
-  SERVICE_LEVEL_SETTINGS: string;
-  SERVICE_LEVELS: string;
+  BASE_URL: string;
   CAPABILITIES: string;
-  FEATURES: string;
+  DEVICE: string;
+  DEVICES: string;
+  DEVICES_V2: string;
   EMERGENCY_LOCATIONS: string;
+  FEATURES: string;
+  LIBRARY: string;
+  LIBRARY_SUMMARY: string;
+  LOGOUT: string;
   NOTIFY: string;
+  RESTART_BASESTATION: string;
+  SERVICE_LEVELS: string;
+  SERVICE_LEVEL_SETTINGS: string;
+  SET_DEVICE_NAME: string;
+  SNAPSHOT: string;
+  START_NEW_SESSION: string;
   START_STREAM: string;
   STOP_STREAM: string;
-  SNAPSHOT: string;
-  LIBRARY_SUMMARY: string;
-  LIBRARY: string;
-  START_NEW_SESSION: string;
+  SUBSCRIBE: string;
+  UNSUBSCRIBE: string;
+  WEB: string;
+  WEB_CLIENT: string;
+  WEB_USERS: string;
 }
 
 const ARLO_URLS: ArloUrls = {
@@ -41,8 +43,10 @@ const ARLO_URLS: ArloUrls = {
   LIBRARY_SUMMARY: '',
   LOGOUT: '',
   NOTIFY: '',
+  RESTART_BASESTATION: '',
   SERVICE_LEVELS: '',
   SERVICE_LEVEL_SETTINGS: '',
+  SET_DEVICE_NAME: '',
   SNAPSHOT: '',
   START_NEW_SESSION: '',
   START_STREAM: '',
@@ -72,9 +76,11 @@ ARLO_URLS.CAPABILITIES = `${ARLO_URLS.WEB_USERS}/capabilities`;
 ARLO_URLS.FEATURES = `${ARLO_URLS.WEB_USERS}/subscription/smart/features`;
 ARLO_URLS.EMERGENCY_LOCATIONS = `${ARLO_URLS.WEB_USERS}/emergency/locations`;
 ARLO_URLS.NOTIFY = `${ARLO_URLS.DEVICES}/notify`;
+ARLO_URLS.RESTART_BASESTATION = `${ARLO_URLS.DEVICES}/restart`;
 ARLO_URLS.START_STREAM = `${ARLO_URLS.DEVICES}/startStream`;
 ARLO_URLS.STOP_STREAM = `${ARLO_URLS.DEVICES}/stopStream`;
 ARLO_URLS.SNAPSHOT = `${ARLO_URLS.DEVICES}/fullFrameSnapshot`;
+ARLO_URLS.SET_DEVICE_NAME = `${ARLO_URLS.DEVICES}/renameDevice`;
 ARLO_URLS.LIBRARY_SUMMARY = `${ARLO_URLS.WEB_USERS}/library/metadata`;
 ARLO_URLS.LIBRARY = `${ARLO_URLS.WEB_USERS}/library`;
 ARLO_URLS.START_NEW_SESSION = `https://${API_DOMAIN}/hmsweb/users/session/v2`;

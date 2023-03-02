@@ -1,0 +1,8 @@
+# Ignore everything by default.
+*
+
+# Include the following.
+!LICENSE.md
+!README.md
+!dist/**
+!package.json

@@ -1,16 +1,16 @@
 export interface Configuration {
   /**
-   * Arlo user
-   */
-  arloUser: string;
-  /**
    * Arlo password
    */
   arloPassword: string;
   /**
-   * Email address registered to receive MFA
+   * Arlo user
    */
-  emailUser: string;
+  arloUser: string;
+  /**
+   * Email IMAP server port. E.g. 993
+   */
+  emailImapPort: number;
   /**
    * Email password
    */
@@ -20,7 +20,7 @@ export interface Configuration {
    */
   emailServer: string;
   /**
-   * Email IMAP server port. E.g. 993
+   * Email address registered to receive MFA
    */
-  emailImapPort: number;
+  emailUser: string;
 }
