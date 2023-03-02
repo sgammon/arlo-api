@@ -23,7 +23,8 @@ jobs:
   publish:
     executor: node/default # use the default executor defined within the orb
     steps:
-      - checkout
+      - attach_workspace:
+          at: ~/project
       - run:
           name: Publish to NPM
           command: |
