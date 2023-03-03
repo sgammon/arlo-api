@@ -1,7 +1,7 @@
 {
   "name": "arlo-api",
-  "version": "1.0.8",
-  "description": "Thin API for authenticating with Arlo",
+  "version": "1.0.9",
+  "description": "Thin API for interacting with Arlo",
   "main": "dist/index.js",
   "keywords": [
     "arlo",
@@ -17,7 +17,7 @@
     "postpublish": "npm run clean",
     "prepublishOnly": "npm run build",
     "test": "jest",
-    "watch": "npm run build && npm link && nodemon"
+    "debug": "npm run build && npx ts-node scripts/debug-basestation.ts"
   },
   "author": "Will O'Donnell",
   "license": "MIT",

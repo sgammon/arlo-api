@@ -28,8 +28,8 @@ jobs:
       - run:
           name: Publish to NPM
           command: |
-              npm set //registry.npmjs.org/:_authToken=$NPM_TOKEN
-              npm publish
+            npm set //registry.npmjs.org/:_authToken=$NPM_TOKEN
+            npm publish
 
 workflows:
   test_my_app:
