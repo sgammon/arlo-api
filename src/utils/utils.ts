@@ -2,6 +2,10 @@ export function stringsEqualInsensitive(one: string, two: string): boolean {
   return one.toLowerCase() === two.toLowerCase();
 }
 
+export function isEmptyOrSpaces(str: string) {
+  return str === null || str.match(/^ *$/) !== null;
+}
+
 export function assertDefined(obj: unknown, prop: string): asserts obj {
   if (!obj) {
     throw new Error(`${prop} is not defined`);

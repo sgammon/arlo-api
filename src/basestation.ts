@@ -10,7 +10,7 @@ import {
   NOTIFY_PAYLOAD,
 } from './interfaces/arlo-interfaces';
 import { createTransactionId } from './utils/helpers';
-import { assert } from './utils/utils';
+import { assert, isEmptyOrSpaces } from './utils/utils';
 
 // noinspection JSUnusedGlobalSymbols
 export class Basestation extends EventEmitter {
@@ -125,18 +125,33 @@ export class Basestation extends EventEmitter {
   }
 
   private message(event: Buffer): boolean {
-    const data = JSON.parse(
-      event
-        .toString()
-        .replace('event: message\ndata: ', '')
-        .replace('\n\n\n', '')
-    );
+    const message = event
+      .toString()
+      .replace('event: message\ndata: ', '')
+      .replace('\n\n\n', '');
+
+    if (isEmptyOrSpaces(message)) {
+      return this.error('Unable to parse message as no data was found');
+    }
+
+    let data = { status: '', action: '', reason: '' };
+
+    try {
+      data = JSON.parse(message);
+    } catch (e) {
+      return this.error(
+        `Unhandled exception when trying to parse event data: ${message}`
+      );
+    }
 
     if (data?.status === 'connected') {
       return this.emit(ARLO_EVENTS.open, 'Event stream opened');
     }
     if (data?.action === 'logout' || data?.status === 'disconnected') {
-      return this.emit(ARLO_EVENTS.close, 'Event stream disconnected');
+      return this.emit(
+        ARLO_EVENTS.close,
+        `Event stream disconnected: ${data.reason}`
+      );
     }
 
     return this.emit(ARLO_EVENTS.message, data);

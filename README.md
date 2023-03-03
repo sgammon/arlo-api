@@ -78,10 +78,10 @@ And then use the provided `_shortCircuitLogin` method.
 const arlo = new Client(config);
 
 const loginResult: LoginResult = {
-    serialNumber: process.env.SERIAL_NUMBER as string,
-    sessionExpires: Number.parseInt(process.env.SESSION_EXPIRES as string),
-    token: process.env.TOKEN as string,
-    userId: process.env.USER_ID as string,
+  serialNumber: process.env.SERIAL_NUMBER as string,
+  sessionExpires: Number.parseInt(process.env.SESSION_EXPIRES as string),
+  token: process.env.TOKEN as string,
+  userId: process.env.USER_ID as string,
 };
 
 arlo._shortCircuitLogin(loginResult);

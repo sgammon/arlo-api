@@ -39,6 +39,15 @@ const config: Configuration = {
     console.log('stream closed');
   });
 
+  basestation.on(ARLO_EVENTS.error, (data) => {
+    console.log('error encountered');
+    console.log(data);
+  });
+
+  basestation.on('pong', () => {
+    console.log('ping');
+  });
+
   console.log('starting stream');
   await basestation.startStream();
 })();
