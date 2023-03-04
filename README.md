@@ -26,9 +26,9 @@ const device = await arlo.getDevice({ deviceType: 'basestation' });
 const basestation = new Basestation(arlo, device);
 
 // Setup event listeners.
-basestation.on(ARLO_EVENTS.open, () => { });
+basestation.on(ARLO_EVENTS.open, () => {});
 
-basestation.on(ARLO_EVENTS.close, () => { });
+basestation.on(ARLO_EVENTS.close, () => {});
 
 // Start event stream.
 await basestation.startStream();

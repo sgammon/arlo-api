@@ -43,7 +43,7 @@ const config: Configuration = {
     console.log(data);
     // Restart the stream in 30 seconds.
     setTimeout(() => basestation.startStream(), 30 * 1000);
-  }
+  };
 
   const debouncedCb = debounce(streamClosedCb, 2000);
 

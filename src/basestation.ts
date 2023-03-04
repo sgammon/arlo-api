@@ -1,4 +1,3 @@
-import { AxiosResponse } from 'axios';
 import { EventEmitter } from 'events';
 import { Client } from './client';
 import ARLO_EVENTS from './constants/arlo-events';
@@ -94,34 +93,31 @@ export class Basestation extends EventEmitter {
    * Start event stream for the basestation
    */
   public async startStream(): Promise<void> {
-    await this.client.axiosClient.get(
-      ARLO_URLS.SUBSCRIBE,
-      {
+    await this.client.axiosClient
+      .get(ARLO_URLS.SUBSCRIBE, {
         headers: {
           ...this.headers,
           xcloudId: this.basestation.xCloudId,
           Accept: 'text/event-stream',
         },
         responseType: 'stream',
-      }
-    ).then((response) => {
-      const stream = response.data;
-      stream.on('data', (data: any) => this.message(data));
-      stream.on('error', (error: any) => this.error(error));
-      stream.on('end', () => this.disconnected('stream ended'));
-    }).catch((error) => {
-      this.error(error);
-    });
+      })
+      .then((response) => {
+        const stream = response.data;
+        stream.on('data', (data: any) => this.message(data));
+        stream.on('error', (error: any) => this.error(error));
+        stream.on('end', () => this.disconnected('stream ended'));
+      })
+      .catch((error) => {
+        this.error(error);
+      });
 
     return;
   }
 
   private disconnected(reason: string) {
     this.connected = false;
-    return this.emit(
-      ARLO_EVENTS.close,
-      `Event stream disconnected: ${reason}`
-    );
+    return this.emit(ARLO_EVENTS.close, `Event stream disconnected: ${reason}`);
   }
 
   private parseMessage(message: string): ArloMessage | Error {
