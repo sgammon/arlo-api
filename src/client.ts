@@ -207,6 +207,9 @@ export class Client {
 
     const maxTries = 4;
     const oneSecond = 1000;
+    // Wait 5 seconds before checking inbox. This is because we may get a false
+    // positive if an existing unread email is found before our expected one.
+    await this.delay(oneSecond * 5);
     for (let i = 0; i < maxTries; ++i) {
       try {
         // eslint-disable-next-line no-await-in-loop

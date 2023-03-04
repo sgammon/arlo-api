@@ -36,7 +36,7 @@ await basestation.startStream();
 
 ### Authentication
 
-Currently, email is the only supported MFA method. Caveat I've only tested with Gmail.
+Currently, email is the only supported MFA method. Caveat I've only tested with Gmail. The library will mark Arlo OTP emails has read. A future release will allow deletion based on a configuration value.
 
 #### Configuration
 
