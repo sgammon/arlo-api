@@ -11,20 +11,27 @@ Thin API for interacting with Arlo
 ## Usage
 
 ```ts
+import { Basestation } from './basestation';
+
 const arlo = new Client(config);
 
 // `result` contains necessary information to make further requests
 // allowing you to consume just the login result in your library.
 const result = await arlo.login();
 
-// Now that arlo has been logged in get the device matching type doorbell.
-const device = await arlo.getDevice({ deviceType: 'doorbell' });
+// Now that arlo has been logged in get the device matching type basestation.
+const device = await arlo.getDevice({ deviceType: 'basestation' });
 
-// Construct a new camera object using our arlo client and the the doorbell device.
-const camera = new Camera(arlo, device);
+// Construct a new basestation object using our arlo client and the the basestation device.
+const basestation = new Basestation(arlo, device);
 
-// Interact with the camera object.
-const alerts = await camera.getSmartAlerts();
+// Setup event listeners.
+basestation.on(ARLO_EVENTS.open, () => { });
+
+basestation.on(ARLO_EVENTS.close, () => { });
+
+// Start event stream.
+await basestation.startStream();
 ```
 
 ### Authentication

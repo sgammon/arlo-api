@@ -33,9 +33,9 @@ describe('arlo-authenticator', function () {
 
     const device = await arlo.getDevice({ deviceType: 'basestation' });
 
-    const camera = new Basestation(arlo, device);
+    const basestation = new Basestation(arlo, device);
 
-    const alerts = await camera.getState();
+    basestation.startStream();
   });
 
   test('it interrogates the basestation', async () => {
@@ -54,6 +54,6 @@ describe('arlo-authenticator', function () {
 
     const basestation = new Basestation(arlo, device);
 
-    const state = await basestation.getState();
+    basestation.startStream();
   });
 });
