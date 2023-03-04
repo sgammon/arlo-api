@@ -155,7 +155,6 @@ export class Basestation extends EventEmitter {
     const data = result.data;
     if (data?.status === 'connected') {
       this.connected = true;
-      console.log('now that were connected subscribe to events');
       this._keepAlive();
       return this.emit(ARLO_EVENTS.open, 'Event stream opened');
     }
