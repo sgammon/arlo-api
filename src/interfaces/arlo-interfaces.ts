@@ -54,3 +54,12 @@ export interface EVENT_STREAM_RESPONSE {
 export interface START_STREAM_RESPONSE {
   url: string;
 }
+
+export interface ArloMessage {
+  event: string;
+  data: {
+    action?: string;
+    reason?: string;
+    status?: string;
+  };
+}
