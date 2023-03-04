@@ -22,7 +22,7 @@ const result = await arlo.login();
 // Now that arlo has been logged in get the device matching type basestation.
 const device = await arlo.getDevice({ deviceType: 'basestation' });
 
-// Construct a new basestation object using our arlo client and the the basestation device.
+// Construct a new basestation object using our arlo client and the basestation device.
 const basestation = new Basestation(arlo, device);
 
 // Setup event listeners.
@@ -36,7 +36,7 @@ await basestation.startStream();
 
 ### Authentication
 
-Currently, email is the only supported MFA method. Caveat I've only tested with Gmail. The library will mark Arlo OTP emails has read. A future release will allow deletion based on a configuration value.
+Currently, email is the only supported MFA method. Caveat I've only tested with Gmail. The library will mark Arlo OTP emails as read. A future release will allow deletion based on a configuration value.
 
 #### Configuration
 
